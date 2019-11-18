@@ -1,0 +1,8 @@
+{
+    "python.pythonPath": "venv/bin/python3.7",
+    "python.linting.enabled": false,
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Enabled": false,
+    "terminal.integrated.shell.osx": "/bin/zsh",
+    "python.terminal.activateEnvironment": true
+}
