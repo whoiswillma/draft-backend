@@ -13,29 +13,28 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
+def json_response(success, data_or_error, code):
+    res = { "success": success }
+    if data_or_error != None:
+        if success:
+            res['data'] = data_or_error
+        else:
+            res['error'] = data_or_error
+    return json.dumps(res), code, {'Content-Type': 'application/json; charset=utf-8'}
 
 @app.route('/api/users/', methods=['GET'])
 def user_get_all():
-    return json.dumps({
-        'success': True,
-        'data': [user.serialize() for user in User.query.all()]
-    }), 200
+    return json_response(True, [user.serialize() for user in User.query.all()], 200)
 
 
 @app.route('/api/user/<int:user_id>/', methods=['GET'])
 def user_get_id(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user:
-        return json.dumps({
-            'success': True, 
-            'data': user.serialize()
-        }), 200
+        return json_response(True, user.serialize(), 200)
 
     else:
-        return json.dumps({
-            'success': False, 
-            'error': 'User not found'
-        }), 404
+        return json_response(False, 'User not found', 404)
 
 
 @app.route('/api/users/', methods=['POST'])
@@ -46,10 +45,7 @@ def user_create():
         db.session.add(user)
         db.session.commit()
 
-        return json.dumps({ 
-            'success': True,
-            'data': user.serialize()
-        }), 200
+        return json_response(True, user.serialize(), 200)
 
     except Exception as e:
         return json.dumps({
@@ -60,18 +56,19 @@ def user_create():
 
 @app.route('/api/users/delete_all/', methods=['DELETE'])
 def user_delete_all():
-    User.query.delete()
+    for user in User.query.all():
+        db.session.delete(user)
     db.session.commit()
 
-    return json.dumps({ 
-        'success': True
-    }), 200
+    return json_response(True, None, 200)
 
 
 def trip_update_contents(trip, data):
     trip.name = data.get('name', 'Untitled trip')
     trip.start = data.get('start')
-    trip.entries = []
+    for entry in trip.entries:
+        db.session.delete(entry)
+        
     for entry_data in data.get('entries', []):
         entry = Entry(description=entry_data['description'], 
                     kind=entry_data['kind'],
@@ -102,24 +99,18 @@ def trip_create(user_id):
 
         db.session.commit()
 
-        return json.dumps({ 
-            'success': True,
-            'data': trip.serialize()
-        }), 200
+        return json_response(True, trip.serialize(), 200)
 
     except Exception as e:
-        return json.dumps({
-            'success': False, 
-            'error': 'Exception: ' + str(e)
-        }), 500
+        return json_resopnse(False, 'Exception: ' + str(e), 500)
 
 
-@app.route('/api/trip/<int:trip_id>', methods=['PUT'])
+@app.route('/api/trip/<int:trip_id>/', methods=['PUT'])
 def trip_update(trip_id):
     try:
         body = json.loads(request.data)
 
-        trip = Trip.query.filter_by(trip_id=trip_id).first()
+        trip = Trip.query.filter_by(id=trip_id).first()
         if not trip:
             return json.dumps({
                 'success': False,
@@ -128,14 +119,10 @@ def trip_update(trip_id):
         
         with db.session.no_autoflush:   
             trip_update_contents(trip, body)
-            user.trips.append(trip)
 
         db.session.commit()
 
-        return json.dumps({ 
-            'success': True,
-            'data': trip.serialize()
-        }), 200
+        return json_response(True, trip.serialize(), 200)
 
     except Exception as e:
         return json.dumps({
