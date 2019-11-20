@@ -1,0 +1,7 @@
+version: "3.7"
+services:
+    draft-backend:
+        build: .
+        image: whoiswillma/draft-backend
+        ports:
+            - "5000:5000"
