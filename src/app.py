@@ -1,6 +1,7 @@
 import json
 from db import db, User, Trip, Entry
 from flask import Flask, request
+import unsplash_api
 
 app = Flask(__name__)
 db_filename = 'app.db'
@@ -21,6 +22,7 @@ def json_response(success, data_or_error, code):
         else:
             res['error'] = data_or_error
     return json.dumps(res), code, {'Content-Type': 'application/json; charset=utf-8'}
+
 
 @app.route('/api/users/', methods=['GET'])
 def user_get_all():
@@ -76,6 +78,12 @@ def trip_update_contents(trip, data):
                     day_index=entry_data['day_index'])
         trip.entries.append(entry)
         db.session.add(entry)
+
+    location = data.get('location')
+    if location:
+        trip.location = location
+        trip.unsplash_data = unsplash_api.unsplash_search(location)
+
     return trip
         
 
@@ -117,7 +125,7 @@ def trip_update(trip_id):
                 'error': 'Trip not found'
             }), 404
         
-        with db.session.no_autoflush:   
+        with db.session.no_autoflush: 
             trip_update_contents(trip, body)
 
         db.session.commit()

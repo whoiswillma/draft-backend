@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import json
 
 db = SQLAlchemy()
 
@@ -25,8 +26,10 @@ class Trip(db.Model):
     __tablename__ = 'trip'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    location = db.Column(db.String, nullable=True)
     start = db.Column(db.Integer, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    unsplash_data = db.Column(db.String, nullable=True)
     entries = db.relationship('Entry', cascade='delete')
 
     def __init__(self):
@@ -36,6 +39,7 @@ class Trip(db.Model):
     def serialize(self, group_by_days = False):
         serialized = {
             'id': self.id,
+            'location': self.location,
             'name': self.name,
             'start': self.start
         }
@@ -49,6 +53,13 @@ class Trip(db.Model):
         else:
             serialized['entries'] = [entry.serialize() for entry in self.entries]
 
+        try:
+            unsplash_json = json.loads(self.unsplash_data)
+            image_url = unsplash_json['urls']['regular']
+            serialized['image_url'] = image_url
+        except:
+            pass
+            
         return serialized
     
 
