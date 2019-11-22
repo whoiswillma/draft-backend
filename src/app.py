@@ -2,6 +2,8 @@ import json
 from db import db, User, Trip, Entry
 from flask import Flask, request
 import unsplash_api
+import ssl
+import os
 
 app = Flask(__name__)
 db_filename = 'app.db'
@@ -140,4 +142,17 @@ def trip_update(trip_id):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    public_key = os.getenv('PUBLIC_KEY')
+    private_key = os.getenv('PRIVATE_KEY')
+    if public_key and private_key:
+        print("Starting draft-backend with SSL")
+        print(public_key, private_key)
+        app.run(host='0.0.0.0', 
+                port=5000, 
+                debug=False, 
+                ssl_context=(public_key, private_key))
+    else:
+        print('Starting draft-backend without SSL')
+        app.run(host='0.0.0.0', 
+                port=5000, 
+                debug=True)
