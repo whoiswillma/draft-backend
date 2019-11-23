@@ -142,17 +142,14 @@ def trip_update(trip_id):
 
 
 if __name__ == '__main__':
-    public_key = os.getenv('PUBLIC_KEY')
-    private_key = os.getenv('PRIVATE_KEY')
-    if public_key and private_key:
-        print("Starting draft-backend with SSL")
-        print(public_key, private_key)
+    production = os.getenv('PRODUCTION')
+    if production:
+        print('Starting draft-backend in production mode')
         app.run(host='0.0.0.0', 
                 port=5000, 
-                debug=False, 
-                ssl_context=(public_key, private_key))
+                debug=False)
     else:
-        print('Starting draft-backend without SSL')
+        print('Starting draft-backend in debug mode')
         app.run(host='0.0.0.0', 
                 port=5000, 
                 debug=True)
