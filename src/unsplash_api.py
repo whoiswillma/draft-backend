@@ -18,9 +18,5 @@ def unsplash_search(query):
         )
         return json.dumps(response.json())
 
-    except:
+    except Exception as e:
         return None
-
-
-if __name__ == '__main__':
-    print(unsplash_search('paris'))

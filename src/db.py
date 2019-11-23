@@ -58,7 +58,7 @@ class Trip(db.Model):
             image_url = unsplash_json['urls']['regular']
             serialized['image_url'] = image_url
         except:
-            pass
+            serialized['image_url'] = None
             
         return serialized
     

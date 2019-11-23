@@ -1,20 +1,25 @@
 import json
 from db import db, User, Trip, Entry
 from flask import Flask, request
-import unsplash_api
 import ssl
 import os
+import sys
+import unsplash_api
+from flog import fprint
 
 app = Flask(__name__)
 db_filename = 'app.db'
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///%s' % db_filename
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = bool(os.getenv('DEBUG'))
+
 
 db.init_app(app)
 with app.app_context():
     db.create_all()
+
 
 def json_response(success, data_or_error, code):
     res = { "success": success }
@@ -112,7 +117,7 @@ def trip_create(user_id):
         return json_response(True, trip.serialize(), 200)
 
     except Exception as e:
-        return json_resopnse(False, 'Exception: ' + str(e), 500)
+        return json_response(False, 'Exception: ' + str(e), 500)
 
 
 @app.route('/api/trip/<int:trip_id>/', methods=['PUT'])
@@ -142,14 +147,22 @@ def trip_update(trip_id):
 
 
 if __name__ == '__main__':
-    production = os.getenv('PRODUCTION')
-    if production:
-        print('Starting draft-backend in production mode')
+    debug_enabled = os.getenv('DEBUG')
+    if not debug_enabled:
+        fprint('Starting draft-backend in production mode')
+    else: 
+        fprint('Starting draft-backend in debug mode')
+
+    if os.getenv('UNSPLASH_ACCESS_KEY'):
+        fprint('Unsplash API key found')
+    else:
+        fprint('Unsplash API key NOT found')
+    
+    if not debug_enabled:
         app.run(host='0.0.0.0', 
                 port=5000, 
                 debug=False)
     else:
-        print('Starting draft-backend in debug mode')
         app.run(host='0.0.0.0', 
                 port=5000, 
                 debug=True)
