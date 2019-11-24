@@ -4,6 +4,8 @@ View the companion iOS app here: https://github.com/ZainKho/draft
 
 *Let your vacation muse take you away*: Draft lets you plan out trips and vacations, and share them with friends and family.
 
+View designs here: https://www.figma.com/file/LrYb6NKKZ9A6VnmZbJ8AJx/Draft?node-id=0%3A1
+
 ### Hack Challenge
 
 This project (iOS app, Backend) was developed as part of the Hack Challenge. Cornell AppDev offers four courses in iOS Development, Backend Development, Digital Product Design, and (soon) Android Development. Check it out here:
