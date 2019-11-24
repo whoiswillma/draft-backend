@@ -106,7 +106,7 @@ def trip_create(user_id):
         
         body = json.loads(request.data)
 
-        with db.session.no_autoflush:   
+        with db.session.no_autoflush:
             trip = Trip()
             trip_update_contents(trip, body)
             user.trips.append(trip)

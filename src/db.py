@@ -55,10 +55,11 @@ class Trip(db.Model):
 
         try:
             unsplash_json = json.loads(self.unsplash_data)
-            image_url = unsplash_json['urls']['regular']
-            serialized['image_url'] = image_url
+            serialized['image_url'] = unsplash_json['urls']['regular']
+            serialized['image_credit'] = unsplash_json['user']['name']
         except:
             serialized['image_url'] = None
+            serialized['image_credit'] = None
             
         return serialized
     
