@@ -12,5 +12,7 @@ This project (iOS app, Backend) was developed as part of the Hack Challenge. Cor
 
 ### Information pertinent to backenders
 
+I have set up an instance of the backend running at: https://draft-backend.duckdns.org/. Come check it out!
+
 Draft uses the Unsplash API to pull images for the frontend. It works (as far as I know) without an API key so no worries there. 
 However, if you would like to use Draft to its fullest, enable Unsplash images by adding `UNSPLASH_ACCESS_KEY` to your environment.
