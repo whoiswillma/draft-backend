@@ -64,7 +64,7 @@ Response:
 
 ```image_url``` is the unsplash image. ```image_credit``` is the attribution. Both these parameters may or may not be returned.
 
-#### Get Specific User: `GET /api/user/1/`
+#### Get Specific User: `GET /api/user/<user_id>/`
 Response:
 ```
 {
