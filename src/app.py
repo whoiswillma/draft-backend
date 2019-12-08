@@ -63,6 +63,20 @@ def user_create():
         }), 400
 
 
+@app.route('/api/trip/search/', methods=['POST'])
+def search_image():
+    try:
+        body = json.loads(request.data)
+        data = json.loads(unsplash_api.unsplash_search(body['search_query']))
+
+        return json_response(True, data, 200)
+
+    except Exception as e:
+        return json.dumps({
+            'success': False, 
+            'error': 'Exception: ' + str(e)
+        }), 400
+
 @app.route('/api/users/delete_all/', methods=['DELETE'])
 def user_delete_all():
     for user in User.query.all():
