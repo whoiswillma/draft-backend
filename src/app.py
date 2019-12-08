@@ -77,6 +77,7 @@ def search_image():
             'error': 'Exception: ' + str(e)
         }), 400
 
+
 @app.route('/api/users/delete_all/', methods=['DELETE'])
 def user_delete_all():
     for user in User.query.all():
@@ -158,6 +159,22 @@ def trip_update(trip_id):
             'success': False, 
             'error': 'Exception: ' + str(e)
         }), 400
+
+
+@app.route('/api/trip/<int:trip_id>/', methods=['DELETE'])
+def trip_delete(trip_id):
+    try:
+        trip = Trip.query.filter_by(id=trip_id).first()
+        if not trip:
+            return json_response(False, 'Trip not found', 404)
+        
+        db.session.delete(trip)
+        db.session.commit()
+
+        return json_response(True, trip.serialize(), 200)
+
+    except Exception as e:
+        return json_response(False, str(e), 500)
 
 
 if __name__ == '__main__':
